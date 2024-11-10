@@ -1,0 +1,67 @@
+Implement indexing in MongoDB, for Grocery shop database. Demonstrate the following:
+a) Create and drop different types of indexes and explain () to show the advantage of the
+indexes.
+
+mongo
+
+use GroceryShopDB
+
+db.createCollection("Sales")
+
+db.Sales.insertMany([
+  { "EmployeeName": "raam", "Item": "Apples", "Quantity": 10, "Price": 30, "Date": new Date("2023-11-01") },
+  { "EmployeeName": "shaam", "Item": "Bananas", "Quantity": 5, "Price": 10, "Date": new Date("2023-11-02") },
+  { "EmployeeName": "siya", "Item": "Oranges", "Quantity": 8, "Price": 15, "Date": new Date("2023-11-01") },
+  { "EmployeeName": "riya", "Item": "Apples", "Quantity": 7, "Price": 30, "Date": new Date("2023-11-03") },
+  { "EmployeeName": "joe", "Item": "Mangoes", "Quantity": 6, "Price": 50, "Date": new Date("2023-11-01") },
+  { "EmployeeName": "raam", "Item": "Bananas", "Quantity": 15, "Price": 10, "Date": new Date("2023-11-04") },
+  { "EmployeeName": "shaam", "Item": "Apples", "Quantity": 12, "Price": 30, "Date": new Date("2023-11-02") },
+  { "EmployeeName": "siya", "Item": "Mangoes", "Quantity": 3, "Price": 50, "Date": new Date("2023-11-03") },
+  { "EmployeeName": "riya", "Item": "Oranges", "Quantity": 10, "Price": 15, "Date": new Date("2023-11-04") }
+])
+
+db.Sales.createIndex({ "Item": 1 })
+
+db.Sales.find({ "Item": "Apples" })
+
+db.Sales.getIndexes()
+
+db.Sales.dropIndex({ "Item": 1 })
+
+db.Sales.createIndex({ "Item": 1, "Price": -1 })
+
+db.Sales.find({ "Item": "Apples", "Price": { $gte: 20 } })
+
+db.Sales.dropIndex({ "Item": 1, "Price": -1 })
+
+db.Sales.createIndex({ "Item": "text" })
+
+//Usage Example: Text Search
+db.Sales.find({ $text: { $search: "Apples" } })
+
+db.Sales.dropIndex({ "Item": "text" })
+
+db.Sales.createIndex({ "Date": 1 }, { expireAfterSeconds: 2592000 })
+
+db.Sales.dropIndex({ "Date": 1 })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

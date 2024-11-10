@@ -1,0 +1,38 @@
+Create a employee database using MongoDB and Implement
+a) Inserting and saving document
+b) Updating document
+c) up inserts the email ID of employee
+d) updating multiple documents
+e) find the <30000 salary employee
+f) print the employee name in ascending order
+
+use EmployeeDB
+
+db.createCollection("Employees")
+
+db.Employees.insertMany([
+  { "Emp_ID": 1, "Name": "raam", "Salary": 45000, "Department": "HR" },
+  { "Emp_ID": 2, "Name": "shaam", "Salary": 28000, "Department": "Finance" },
+  { "Emp_ID": 3, "Name": "siya", "Salary": 32000, "Department": "IT" },
+  { "Emp_ID": 4, "Name": "riya", "Salary": 25000, "Department": "Marketing" },
+  { "Emp_ID": 5, "Name": "joe", "Salary": 50000, "Department": "Operations" }
+])
+
+db.Employees.insertOne({ "Emp_ID": 6, "Name": "mike", "Salary": 35000, "Department": "IT" })
+
+db.Employees.updateOne({ "Name": "riya" }, { $set: { "Salary": 27000 } })
+
+db.Employees.updateOne(
+  { "Name": "shaam" },
+  { $set: { "Email": "shaam@example.com" } },
+  { upsert: true }
+)
+
+db.Employees.updateMany(
+  { "Department": "IT" },
+  { $set: { "Department": "Technology" } }
+)
+
+db.Employees.find({ "Salary": { $lt: 30000 } })
+
+db.Employees.find({}, { "Name": 1, "_id": 0 }).sort({ "Name": 1 })

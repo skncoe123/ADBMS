@@ -1,0 +1,90 @@
+6. Implement Aggregation and Indexing with suitable example using MongoDB.
+i. Example Given the following document in the friends collection:
+ { "_id" : ObjectId(...),
+ "name" : "Alice"
+ "age" : 27
+ }
+create an index on the name field.
+ii. Execute all aggregation functions on suitable db.
+
+mongo
+
+use friendsDB
+
+db.createCollection("friends")
+
+db.friends.insertMany([
+    { _id: 1, name: "Ram", age: 25 },
+    { _id: 2, name: "Shamm", age: 30 },
+    { _id: 3, name: "Siya", age: 22 },
+    { _id: 4, name: "Riya", age: 28 },
+    { _id: 5, name: "Ram", age: 27 }
+]);
+
+db.friends.createIndex({ name: 1 })
+
+db.friends.getIndexes()
+
+db.friends.aggregate([
+    { $match: { age: { $gt: 25 } } }
+])
+
+db.friends.aggregate([
+    { $group: { _id: "$age", count: { $sum: 1 } } }
+])
+
+db.friends.aggregate([
+    { $project: { name: 1, age: 1 } }
+])
+
+db.friends.aggregate([
+    { $sort: { age: 1 } }
+])
+
+db.friends.aggregate([
+    { $skip: 1 },
+    { $limit: 2 }
+])
+
+db.friends.aggregate([
+    { $sort: { age: -1 } },
+    { $limit: 2 }
+])
+
+db.friends.aggregate([
+    { $addFields: { isAdult: { $gte: ["$age", 18] } } }
+])
+
+db.friends.aggregate([
+    { 
+        $facet: {
+            "byAge": [{ $group: { _id: "$age", count: { $sum: 1 } } }],
+            "sortedByName": [{ $sort: { name: 1 } }]
+        }
+    }
+])
+
+db.friends.aggregate([
+    {
+        $lookup: {
+            from: "orders",
+            localField: "name",
+            foreignField: "cust_name",
+            as: "orderDetails"
+        }
+    }
+])
+
+
+
+
+
+
+
+
+
+
+
+
+
+

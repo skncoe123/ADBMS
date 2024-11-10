@@ -1,0 +1,48 @@
+10.Implement Map-reduce and aggregation in MongoDB, for Grocery shop database. Demonstrate the
+ following:
+a) Aggregation framework
+
+
+use GroceryShopDB
+
+db.createCollection("Sales")
+
+db.Sales.insertMany([
+  { "EmployeeName": "raam", "Item": "Apples", "Quantity": 10, "Price": 30 },
+  { "EmployeeName": "shaam", "Item": "Bananas", "Quantity": 5, "Price": 10 },
+  { "EmployeeName": "siya", "Item": "Oranges", "Quantity": 8, "Price": 15 },
+  { "EmployeeName": "riya", "Item": "Apples", "Quantity": 7, "Price": 30 },
+  { "EmployeeName": "joe", "Item": "Mangoes", "Quantity": 6, "Price": 50 },
+  { "EmployeeName": "raam", "Item": "Bananas", "Quantity": 15, "Price": 10 },
+  { "EmployeeName": "shaam", "Item": "Apples", "Quantity": 12, "Price": 30 },
+  { "EmployeeName": "siya", "Item": "Mangoes", "Quantity": 3, "Price": 50 },
+  { "EmployeeName": "riya", "Item": "Oranges", "Quantity": 10, "Price": 15 }
+])
+
+db.Sales.aggregate([
+  { $group: { _id: "$EmployeeName", TotalSales: { $sum: { $multiply: ["$Quantity", "$Price"] } } } }
+])
+
+db.Sales.aggregate([
+  { $group: { _id: "$Item", TotalQuantitySold: { $sum: "$Quantity" } } }
+])
+
+db.Sales.aggregate([
+  { $group: { _id: "$Item", AveragePrice: { $avg: "$Price" } } }
+])
+
+db.Sales.aggregate([
+  { $project: { Revenue: { $multiply: ["$Quantity", "$Price"] } } },
+  { $group: { _id: null, TotalRevenue: { $sum: "$Revenue" } } }
+])
+
+var mapFunction = function() { emit(this.EmployeeName, this.Quantity * this.Price); };
+var reduceFunction = function(key, values) { return Array.sum(values); };
+
+db.Sales.mapReduce(
+  mapFunction,
+  reduceFunction,
+  { out: "TotalSalesByEmployee" }
+)
+
+db.TotalSalesByEmployee.find()

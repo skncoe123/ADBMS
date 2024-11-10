@@ -1,0 +1,41 @@
+Create a student database using MongoDB and Implement
+a) Inserting and saving document
+b) Updating document
+c) up inserts the internship of student
+d) updating multiple documents
+e) find the <60 % of student
+f) print the student name in ascending order
+g) Print first 10 student info
+
+use StudentDB
+
+db.createCollection("Students")
+
+db.Students.insertMany([
+  { "Roll_no": 1, "Name": "raam", "Marks": 75, "Address": "Pune" },
+  { "Roll_no": 2, "Name": "shaam", "Marks": 55, "Address": "Mumbai" },
+  { "Roll_no": 3, "Name": "siya", "Marks": 92, "Address": "Pune" },
+  { "Roll_no": 4, "Name": "riya", "Marks": 45, "Address": "Delhi" },
+  { "Roll_no": 5, "Name": "joe", "Marks": 60, "Address": "Pune" }
+])
+
+db.Students.insertOne({ "Roll_no": 6, "Name": "mike", "Marks": 85, "Address": "Bangalore" })
+
+db.Students.updateOne({ "Name": "riya" }, { $set: { "Marks": 50 } })
+
+db.Students.updateOne(
+  { "Name": "shaam" },
+  { $set: { "Internship": true } },
+  { upsert: true }
+)
+
+db.Students.updateMany(
+  { "Address": "Pune" },
+  { $inc: { "Marks": 5 } }
+)
+
+db.Students.find({ "Marks": { $lt: 60 } })
+
+db.Students.find({}, { "Name": 1, "_id": 0 }).sort({ "Name": 1 })
+
+db.Students.find().limit(10)

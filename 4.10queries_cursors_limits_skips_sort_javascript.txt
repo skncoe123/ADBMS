@@ -1,0 +1,60 @@
+4. To Execute at least 10 queries on any suitable MongoDB database that demonstrates following:
+$ where queries(compare the values for two keys in a document, for instance, if we had a list of
+items and wanted to return documents where any two of the values are equal),
+Cursors (Limits, skips, sorts, advanced query options) take the result set of the query which
+finds the Employee's whose id is greater than 2 and assign it to the JavaScript variable
+'myEmployee' then use loop to iterate through all of the documents which are returned as part of
+the query and finally, print each document, in JSON readable format.
+Database commands(check the number of documents affected by an update, drop a collection
+from the shell) .
+
+mongo
+
+use EmployeeDB
+
+db.createCollection("employees")
+
+db.employees.insertMany([
+    { _id: 1, name: "Ram", age: 28, salary: 50000, department: "HR" },
+    { _id: 2, name: "Shaam", age: 35, salary: 60000, department: "Finance" },
+    { _id: 3, name: "Siya", age: 30, salary: 60000, department: "Finance" },
+    { _id: 4, name: "Riya", age: 45, salary: 70000, department: "HR" }
+])
+
+db.employees.find({ $where: "this.age == this.salary / 2000" })
+
+db.employees.find().limit(2)
+
+db.employees.find().skip(1)
+
+db.employees.find().sort({ salary: -1 })
+
+var myEmployee = db.employees.find({ _id: { $gt: 1 } });
+myEmployee.forEach(doc => printjson(doc));
+
+db.employees.countDocuments()
+
+var updateResult = db.employees.updateMany({ department: "HR" }, { $inc: { salary: 5000 } });
+print("Documents matched:", updateResult.matchedCount);
+print("Documents modified:", updateResult.modifiedCount);
+
+db.employees.drop()
+
+db.employees.find({ $where: "this.age > 30 && this.salary > this.age * 2000" })
+
+db.employees.find().sort({ salary: -1 }).limit(2)
+
+db.employees.find().sort({ age: 1 }).skip(1).limit(2)
+
+db.employees.aggregate([
+    { $group: { _id: "$department", averageSalary: { $avg: "$salary" } } }
+])
+
+
+
+
+
+
+
+
+

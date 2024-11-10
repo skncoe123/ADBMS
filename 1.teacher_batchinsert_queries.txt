@@ -1,0 +1,45 @@
+1. Create a database with suitable example using MongoDB and implement Inserting and saving
+document (batch insert, insert validation) Removing document, Updating & displaying
+document. Convert following sql queries into mongodb and execute it by considering suitable
+db.
+i. SELECT Teacher_id FROM Teacher_info WHERE Teacher_id= 1;
+ii. SELECT * FROM Teacher_info WHERE sal > 40000
+iii. SELECT * FROM Teacher_info WHERE status = "A" ORDER BY SAL ASC
+iv. UPDATE Teacher_infoSET sal = sal + 10000 WHERE status = "A"
+v. DELETE FROM Teacher_info WHERE Teacher_id = “pic001"
+
+Answer:
+
+mongo
+
+db.createCollection("SchoolDB")
+
+use SchoolDB
+
+
+db.Teacher_info.insertMany([
+   { Teacher_id: 1, name: "John Doe", sal: 45000, status: "A" },
+   { Teacher_id: 2, name: "Jane Smith", sal: 30000, status: "B" },
+   { Teacher_id: 3, name: "Emma Jones", sal: 50000, status: "A" },
+   { Teacher_id: "pic001", name: "Pic Picard", sal: 38000, status: "B" }
+])
+
+db.Teacher_info.find({ Teacher_id: 1 }, { Teacher_id: 1, _id: 0 })
+
+db.Teacher_info.find({ sal: { $gt: 40000 } })
+
+db.Teacher_info.find({ status: "A" }).sort({ sal: 1 })
+
+db.Teacher_info.updateMany(
+   { status: "A" },
+   { $inc: { sal: 10000 } }
+)
+
+db.Teacher_info.deleteOne({ Teacher_id: "pic001" })
+
+db.Teacher_info.insertMany([
+   { Teacher_id: 4, name: "Mark Green", sal: 42000, status: "A" },
+   { Teacher_id: 5, name: "Sara White", sal: 36000, status: "B" }
+])
+
+

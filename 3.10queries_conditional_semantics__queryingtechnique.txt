@@ -1,0 +1,94 @@
+3 To Execute atleast 10 queries on any suitable MongoDB database that demonstrates following
+querying techniques: find and findOne (specific values) Query criteria (Query conditionals, OR
+queries, $not, Conditional semantics) Type-specific queries (Null, Regular expression, Querying
+arrays). Execute following mongodb queries by considering suitable db.
+i. if you have a user(_id, username, email, address) collection and you are interested only
+in the "username" and "email" keys to display.
+ii. look for users who are between the ages of 18 and 30 inclusive.
+iii. find people who registered before January 1, 2007
+iv. Find documents with a "user_id" equal to 12345, and documents with a "username"
+equal to "joe"
+v. find all users with the name Joe or joe
+ For example, suppose we created a collection with three elements:
+ > db.food.insert({"_id" : 1, "fruit" : ["apple", "banana", "peach"]})
+ > db.food.insert({"_id" : 2, "fruit" : ["apple", "kumquat", "orange"]})
+ > db.food.insert({"_id" : 3, "fruit" : ["cherry", "banana", "apple"]})
+find all documents with both "apple" and "banana" elements
+
+answer
+
+mongo
+
+db.createCollection("users")
+db.createCollection("food")
+
+use SampleDB
+
+db.users.insertMany([
+    { _id: 1, username: "Ram", email: "ram@example.com", address: "123 Maple St", age: 25, registration_date: new Date("2005-06-10"), user_id: 12345 },
+    { _id: 2, username: "Shaam", email: "shaam@example.com", address: "456 Oak St", age: 32, registration_date: new Date("2010-01-15"), user_id: 23456 },
+    { _id: 3, username: "Siya", email: "siya@example.com", address: "789 Pine St", age: 29, registration_date: new Date("2006-11-05"), user_id: 34567 },
+    { _id: 4, username: "Riya", email: "riya@example.com", address: "101 Cedar St", age: 22, registration_date: new Date("2008-04-12"), user_id: 45678 }
+])
+
+
+db.food.insertMany([
+    { _id: 1, fruit: ["apple", "banana", "peach"] },
+    { _id: 2, fruit: ["apple", "kumquat", "orange"] },
+    { _id: 3, fruit: ["cherry", "banana", "apple"] }
+])
+
+db.users.find({}, { username: 1, email: 1, _id: 0 })
+
+db.users.findOne({ username: "Ram" }, { username: 1, email: 1, _id: 0 })
+
+db.users.find({ age: { $gte: 18, $lte: 30 } })
+
+db.users.find({ registration_date: { $lt: new Date("2007-01-01") } })
+
+db.users.find({ $or: [{ user_id: 12345 }, { username: "Siya" }] })
+
+db.users.find({ username: { $regex: /^riya$/i } })
+
+db.users.find({ email: null })
+
+db.users.find({ email: { $not: /@example\.com$/ } })
+
+db.food.find({ fruit: { $all: ["apple", "banana"] } })
+
+db.users.find({ username: { $in: ["Ram", "Siya"] } })
+
+db.users.find({ registration_date: { $not: { $lt: new Date("2007-01-01") } } })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

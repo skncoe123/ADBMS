@@ -1,0 +1,185 @@
+7. Design and Implement any 5 query
+using MongoDB
+Consider following database:
+Student(Roll_no, Name, Address)
+Subject(sub_code, sub_name)
+Marks(Roll_no, sub_code, marks)
+Write following queries in NoSQL
+ 1. Find average marks of each student, along with the name of student.
+2. Find how many students have failed in the subject “DBMS”.
+ 3. List out top 10 students.(Use limit)
+4. List out 10 lowest fail students.
+5. Find the entire student who got fail in 1 theory subject.
+6. List out the student they live in Pune city.
+7. Find the subject toppers.
+8.Find the students with lowest marks in each subject.
+
+mongo
+
+use universityDB
+
+db.createCollection("Student")
+db.createCollection("Subject")
+db.createCollection("Marks")
+
+db.Student.insertMany([
+    { Roll_no: 101, Name: "Ram", Address: "Pune" },
+    { Roll_no: 102, Name: "Shamm", Address: "Mumbai" },
+    { Roll_no: 103, Name: "Siya", Address: "Pune" },
+    { Roll_no: 104, Name: "Riya", Address: "Delhi" },
+    { Roll_no: 105, Name: "Joe", Address: "Pune" }
+]);
+
+db.Subject.insertMany([
+    { sub_code: "S101", sub_name: "DBMS" },
+    { sub_code: "S102", sub_name: "Algorithms" },
+    { sub_code: "S103", sub_name: "Networking" }
+]);
+
+db.Marks.insertMany([
+    { Roll_no: 101, sub_code: "S101", marks: 45 },
+    { Roll_no: 101, sub_code: "S102", marks: 78 },
+    { Roll_no: 102, sub_code: "S101", marks: 35 },
+    { Roll_no: 102, sub_code: "S102", marks: 40 },
+    { Roll_no: 103, sub_code: "S101", marks: 55 },
+    { Roll_no: 103, sub_code: "S102", marks: 65 },
+    { Roll_no: 104, sub_code: "S101", marks: 20 },
+    { Roll_no: 104, sub_code: "S102", marks: 30 },
+    { Roll_no: 105, sub_code: "S101", marks: 70 },
+    { Roll_no: 105, sub_code: "S102", marks: 80 }
+]);
+
+db.Marks.aggregate([
+    { $group: { _id: "$Roll_no", avg_marks: { $avg: "$marks" } } },
+    { $lookup: {
+        from: "Student",
+        localField: "_id",
+        foreignField: "Roll_no",
+        as: "student_info"
+    }},
+    { $unwind: "$student_info" },
+    { $project: { name: "$student_info.Name", avg_marks: 1 } }
+]);
+
+db.Marks.aggregate([
+    { $match: { sub_code: "S101", marks: { $lt: 35 } } },
+    { $group: { _id: "$sub_code", failed_students: { $sum: 1 } } }
+]);
+
+db.Marks.aggregate([
+    { $group: { _id: "$Roll_no", total_marks: { $sum: "$marks" } } },
+    { $sort: { total_marks: -1 } },
+    { $limit: 10 },
+    { $lookup: {
+        from: "Student",
+        localField: "_id",
+        foreignField: "Roll_no",
+        as: "student_info"
+    }},
+    { $unwind: "$student_info" },
+    { $project: { name: "$student_info.Name", total_marks: 1 } }
+]);
+
+db.Marks.aggregate([
+    { $match: { marks: { $lt: 35 } } },
+    { $sort: { marks: 1 } },
+    { $limit: 10 },
+    { $lookup: {
+        from: "Student",
+        localField: "Roll_no",
+        foreignField: "Roll_no",
+        as: "student_info"
+    }},
+    { $unwind: "$student_info" },
+    { $project: { name: "$student_info.Name", marks: 1 } }
+]);
+
+db.Marks.aggregate([
+    { $match: { marks: { $lt: 35 } } },
+    { $group: { _id: "$Roll_no", failed_subjects: { $sum: 1 } } },
+    { $match: { failed_subjects: 1 } },
+    { $lookup: {
+        from: "Student",
+        localField: "_id",
+        foreignField: "Roll_no",
+        as: "student_info"
+    }},
+    { $unwind: "$student_info" },
+    { $project: { name: "$student_info.Name", failed_subjects: 1 } }
+]);
+
+db.Student.find({ Address: "Pune" });
+
+db.Marks.aggregate([
+    { $group: { _id: "$sub_code", topper_roll_no: { $max: "$marks" } } },
+    { $lookup: {
+        from: "Student",
+        localField: "topper_roll_no",
+        foreignField: "Roll_no",
+        as: "student_info"
+    }},
+    { $unwind: "$student_info" },
+    { $lookup: {
+        from: "Subject",
+        localField: "_id",
+        foreignField: "sub_code",
+        as: "subject_info"
+    }},
+    { $unwind: "$subject_info" },
+    { $project: { subject: "$subject_info.sub_name", topper: "$student_info.Name", marks: "$topper_roll_no" } }
+]);
+
+db.Marks.aggregate([
+    { $group: { _id: "$sub_code", lowest_marks: { $min: "$marks" } } },
+    { $lookup: {
+        from: "Student",
+        localField: "lowest_marks",
+        foreignField: "marks",
+        as: "student_info"
+    }},
+    { $unwind: "$student_info" },
+    { $lookup: {
+        from: "Subject",
+        localField: "_id",
+        foreignField: "sub_code",
+        as: "subject_info"
+    }},
+    { $unwind: "$subject_info" },
+    { $project: { subject: "$subject_info.sub_name", student: "$student_info.Name", marks: "$lowest_marks" } }
+]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
